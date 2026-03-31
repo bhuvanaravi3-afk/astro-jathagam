@@ -1,0 +1,434 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  Sun, MapPin, Clock, Calendar, User, Download, 
+  Printer, CreditCard, Languages, CheckCircle, ChevronRight,
+  Star, Info, ShieldCheck, Sparkles, BookOpen, Heart, 
+  Briefcase, Zap, Compass, ShieldAlert, TrendingUp, RefreshCw, Lock
+} from 'lucide-react';
+
+const PAYMENT_LINK = "https://rzp.io/rzp/9u8IcpG"; 
+const PACKAGE_PRICE = 299; 
+
+const translations = {
+  en: {
+    title: "AI Lifetime Jathagam",
+    subtitle: "Complete 6-Page Multi-Language Vedic Astrology",
+    formTitle: "Enter Birth Details",
+    name: "Full Name",
+    dob: "Date of Birth",
+    tob: "Time of Birth",
+    pob: "Place of Birth",
+    language: "Report Language",
+    btnPay: "Pay ₹" + PACKAGE_PRICE + " & Generate Full Report",
+    processing: "Redirecting to Secure Payment...",
+    generating: "AI is analyzing your 12 houses and planets...",
+    newReport: "Create New Jathagam",
+    page: "Page",
+    catHealth: "Health",
+    catFamily: "Family",
+    catWork: "Work / Job",
+    catFinance: "Finance",
+    catBusiness: "Business",
+    catWife: "Future Wife",
+    catFuture: "General Future",
+    catCredit: "Credit & Debt"
+  },
+  ta: {
+    title: "AI ஆயுட்கால ஜாதகம்",
+    subtitle: "முழுமையான 6-பக்க விரிவான ஜோதிட ஆய்வு",
+    formTitle: "பிறப்பு விவரங்களை உள்ளிடவும்",
+    name: "முழு பெயர்",
+    dob: "பிறந்த தேதி",
+    tob: "பிறந்த நேரம்",
+    pob: "பிறந்த இடம்",
+    language: "அறிக்கை மொழி",
+    btnPay: "₹" + PACKAGE_PRICE + " செலுத்தி ஜாதகம் பெற",
+    processing: "கட்டணப் பக்கத்திற்குச் செல்கிறது...",
+    generating: "AI உங்கள் கிரக நிலைகளை ஆய்வு செய்கிறது...",
+    newReport: "புதிய ஜாதகம் உருவாக்க",
+    page: "பக்கம்",
+    catHealth: "உடல் நலம்",
+    catFamily: "குடும்பம்",
+    catWork: "உத்தியோகம்",
+    catFinance: "பொருளாதாரம்",
+    catBusiness: "தொழில்",
+    catWife: "வருங்கால மனைவி",
+    catFuture: "எதிர்காலம்",
+    catCredit: "கடன் மற்றும் நிதி"
+  },
+  te: {
+    title: "AI లైఫ్ టైమ్ జాతకం",
+    subtitle: "పూర్తి 6-పేజీల వేద జ్యోతిష్య విశ్లేషణ",
+    formTitle: "జనన వివరాలను నమోదు చేయండి",
+    name: "పూర్తి పేరు",
+    dob: "పుట్టిన తేదీ",
+    tob: "పుట్టిన సమయం",
+    pob: "పుట్టిన స్థలం",
+    language: "నివేదిక భాష",
+    btnPay: "₹" + PACKAGE_PRICE + " చెల్లించి నివేదిక పొందండి",
+    processing: "చెల్లింపుకు మళ్ళించబడుతోంది...",
+    generating: "AI విశ్లేషిస్తోంది...",
+    newReport: "కొత్త జాతకం",
+    page: "పేజీ",
+    catHealth: "ఆరోగ్యం",
+    catFamily: "కుటుంబం",
+    catWork: "ఉద్యోగం",
+    catFinance: "ఆర్థికం",
+    catBusiness: "వ్యాపారం",
+    catWife: "భవిష్యత్ భార్య",
+    catFuture: "భవిష్యత్తు",
+    catCredit: "అప్పు మరియు క్రెడిట్"
+  },
+  kn: {
+    title: "AI ಜೀವಿತಾವಧಿ ಜಾತಕ",
+    subtitle: "ಸಂಪೂರ್ಣ 6-ಪುಟಗಳ ವೈದಿಕ ಜ್ಯೋತಿಷ್ಯ ವಿಶ್ಲೇಷಣೆ",
+    formTitle: "ಜನ್ಮ ವಿವರಗಳನ್ನು ನಮೂದಿಸಿ",
+    name: "ಪೂರ್ಣ ಹೆಸರು",
+    dob: "ಹುಟ್ಟಿದ ದಿನಾಂಕ",
+    tob: "ಹುಟ್ಟಿದ ಸಮಯ",
+    pob: "ಹುಟ್ಟಿದ ಸ್ಥಳ",
+    language: "ವರದಿ ಭಾಷೆ",
+    btnPay: "₹" + PACKAGE_PRICE + " ಪಾವತಿಸಿ ವರದಿ ಪಡೆಯಿರಿ",
+    processing: "ಪಾವತಿಗೆ ಮರುನಿರ್ದೇಶಿಸಲಾಗುತ್ತಿದೆ...",
+    generating: "AI ವಿಶ್ಲೇಷಿಸುತ್ತಿದೆ...",
+    newReport: "ಹೊಸ ಜಾತಕ",
+    page: "ಪುಟ",
+    catHealth: "ಆರೋಗ್ಯ",
+    catFamily: "ಕುಟುಂಬ",
+    catWork: "ಕೆಲಸ",
+    catFinance: "ಹಣಕಾಸು",
+    catBusiness: "ವ್ಯಾಪಾರ",
+    catWife: "ಭವಿಷ್ಯದ ಹೆಂಡತಿ",
+    catFuture: "ಭವಿಷ್ಯ",
+    catCredit: "ಸಾಲ ಮತ್ತು ಕ್ರೆಡಿಟ್"
+  },
+  hi: {
+    title: "AI लाइफटाइम जन्मकुंडली",
+    subtitle: "संपूर्ण 6-पृष्ठीय वैदिक ज्योतिष विश्लेषण",
+    formTitle: "जन्म विवरण दर्ज करें",
+    name: "पूरा नाम",
+    dob: "जन्म तिथि",
+    tob: "जन्म समय",
+    pob: "जन्म स्थान",
+    language: "रिपोर्ट की भाषा",
+    btnPay: "₹" + PACKAGE_PRICE + " भुगतान करें और रिपोर्ट प्राप्त करें",
+    processing: "भुगतान पर पुनर्निर्देशित किया जा रहा है...",
+    generating: "AI विश्लेषण कर रहा है...",
+    newReport: "नई कुंडली बनाएं",
+    page: "पृष्ठ",
+    catHealth: "स्वास्थ्य",
+    catFamily: "परिवार",
+    catWork: "कार्य / नौकरी",
+    catFinance: "वित्त",
+    catBusiness: "व्यवसाय",
+    catWife: "भविष्य की पत्नी",
+    catFuture: "भविष्य",
+    catCredit: "ऋण और क्रेडिट"
+  }
+};
+
+const multiLangAstroContent = {
+  ta: {
+    health: "லக்னாதிபதி பலமாக இருப்பதால் நீண்ட ஆயுளும் ஆரோக்கியமும் உண்டு. செவ்வாய் பார்வை இருப்பதால் உஷ்ணம் சம்பந்தமான உபாதைகள் வரலாம்.",
+    family: "குடும்ப ஸ்தானத்தில் குரு இருப்பதால் அமைதியான மற்றும் மகிழ்ச்சியான குடும்ப வாழ்க்கை அமையும்.",
+    work: "பத்தாம் இடத்து அதிபதி ஆட்சியாக இருப்பதால் நிர்வாகம் சார்ந்த துறைகளில் உயரிய பதவி கிடைக்கும்.",
+    finance: "தனகாரகன் குருவின் அருளால் பொருளாதார நிலை சீராக இருக்கும். ஆடம்பரச் செலவுகளைத் தவிர்ப்பது நல்லது.",
+    business: "சொந்தத் தொழில் தொடங்கும் யோகம் சிறப்பாக உள்ளது. தகவல் தொடர்பு, உணவு தொழில்கள் லாபத்தைத் தரும்.",
+    wife: "ஏழாம் இடம் சுபத்துவமாக இருப்பதால் குணவதி மனைவி அமைவார். திருமணத்திற்குப் பிறகு அதிர்ஷ்டம் கூடும்.",
+    future: "எதிர்காலம் ஒளிமயமாக உள்ளது. 45 வயதிற்குப் பிறகு ஆன்மீகத்தில் ஈடுபாடு அதிகரிக்கும்.",
+    credit: "ஆறாம் இடத்து அதிபதி பலவீனம் அடைவதால் தேவையற்ற கடன்களைத் தவிர்க்கவும். ஜாமீன் கையெழுத்து தவிர்க்கவும்."
+  },
+  te: {
+    health: "లగ్నాధిపతి బలంగా ఉండటం వల్ల దీర్ఘాయువు మరియు ఆరోగ్యం లభిస్తుంది. వేడి సంబంధిత సమస్యల పట్ల జాగ్రత్త వహించండి.",
+    family: "కుటుంబ స్థానంలో గురు గ్రహం ఉండటం వల్ల ప్రశాంతమైన మరియు సంతోషకరమైన కుటుంబ జీవితం ఉంటుంది.",
+    work: "10వ ఇల్లు బలంగా ఉంది, దీనివల్ల ప్రభుత్వ లేదా పరిపాలన రంగాలలో ఉన్నత పదవులు లభిస్తాయి.",
+    finance: "గురు గ్రహ అనుగ్రహంతో ఆర్థిక స్థితి నిలకడగా ఉంటుంది. అనవసర ఖర్చులను తగ్గించుకోండి.",
+    business: "సొంత వ్యాపార యోగం బాగుంది. కమ్యూనికేషన్ మరియు ఫుడ్ బిజినెస్ మీకు లాభాలను తెస్తాయి.",
+    wife: "7వ ఇల్లు శుభప్రదంగా ఉంది, అందమైన మరియు మంచి స్వభావం గల భార్య లభిస్తుంది.",
+    future: "భవిష్యత్తు చాలా ఆశాజనకంగా ఉంది. 45 ఏళ్ల తర్వాత ఆధ్యాత్మిక చింతన పెరుగుతుంది.",
+    credit: "6వ ఇల్లు బలహీనంగా ఉంది, కాబట్టి అప్పులు చేయకుండా ఉండటం మంచిది."
+  },
+  kn: {
+    health: "ಲಗ್ನಾಧಿಪತಿಯು ಬಲಶಾಲಿಯಾಗಿದ್ದು, ಉತ್ತಮ ಆರೋಗ್ಯ ಮತ್ತು ದೀರ್ಘಾಯುಷ್ಯವನ್ನು ಸೂಚಿಸುತ್ತದೆ. ಉಷ್ಣದ ಸಮಸ್ಯೆಗಳ ಬಗ್ಗೆ ಜಾಗ್ರತೆ ಇರಲಿ.",
+    family: "ಕುಟುಂಬದ ಸ್ಥಾನದಲ್ಲಿ ಗುರು ಇರುವುದರಿಂದ ಶಾಂತಿಯುತ ಮತ್ತು ಸುಖಮಯ ಕೌಟುಂಬಿಕ ಜೀವನ ಲಭಿಸುತ್ತದೆ.",
+    work: "ಆಡಳಿತಾತ್ಮಕ ಮತ್ತು ನಿರ್ವಹಣಾ ಕ್ಷೇತ್ರಗಳಲ್ಲಿ ನೀವು ಉನ್ನತ ಸ್ಥಾನವನ್ನು ಅಲಂಕರಿಸುವಿರಿ.",
+    finance: "ಆರ್ಥಿಕ ಸ್ಥಿತಿ ಉತ್ತಮವಾಗಿರುತ್ತದೆ. ಆದರೆ ಐಷಾರಾಮಿ ಖರ್ಚುಗಳ ಮೇಲೆ ನಿಯಂತ್ರಣವಿರಲಿ.",
+    business: "ಸ್ವಂತ ಉದ್ಯೋಗ ಮಾಡುವ ಯೋಗ ಉತ್ತಮವಾಗಿದೆ. ಆಹಾರ ಮತ್ತು ಬಟ್ಟೆ ವ್ಯಾಪಾರದಲ್ಲಿ ಲಾಭವಿದೆ.",
+    wife: "7ನೇ ಮನೆ ಶುಭವಾಗಿದ್ದು, ಗುಣವಂತ ಮತ್ತು ಸುಂದರ ಪತ್ನಿ ಲಭಿಸುವರು. ಮದುವೆಯ ನಂತರ ಭಾಗ್ಯೋದಯವಾಗಲಿದೆ.",
+    future: "ನಿಮ್ಮ ಭವಿಷ್ಯವು ಉಜ್ವಲವಾಗಿದೆ. ಸಮಾಜದಲ್ಲಿ ಗೌರವ ಮತ್ತು ಪ್ರತಿಷ್ಠೆ ಹೆಚ್ಚಾಗಲಿದೆ.",
+    credit: "ಸಾಲದ ವಿಚಾರದಲ್ಲಿ ಜಾಗರೂಕರಾಗಿರಿ. ಬೇರೆಯವರಿಗೆ ಶ್ಯೂರಿಟಿ ಹಾಕಬೇಡಿ."
+  },
+  hi: {
+    health: "लग्नेश बलवान होने से दीर्घायु और अच्छा स्वास्थ्य प्राप्त होगा। पित्त संबंधी विकारों से सावधान रहें।",
+    family: "पारिवारिक स्थान पर बृहस्पति की दृष्टि होने से सुखद और शांतिपूर्ण पारिवारिक जीवन रहेगा।",
+    work: "प्रशासनिक और प्रबंधन क्षेत्रों में उच्च पद प्राप्त होने के प्रबल योग हैं।",
+    finance: "आर्थिक स्थिति मजबूत रहेगी। पैतृक संपत्ति से लाभ होने की संभावना है।",
+    business: "स्वयं का व्यवसाय शुरू करने के लिए समय अनुकूल है। तकनीकी क्षेत्र में सफलता मिलेगी।",
+    wife: "सप्तम भाव शुभ होने से एक गुणवान और सुंदर जीवनसंगिनी प्राप्त होगी।",
+    future: "आपका भविष्य उज्ज्वल है। 45 वर्ष की आयु के बाद आध्यात्मिक उन्नति होगी।",
+    credit: "अनावश्यक ऋण लेने से बचें। वित्तीय प्रबंधन पर ध्यान देना आवश्यक है।"
+  },
+  en: {
+    health: "With a strong Ascendant lord, you will enjoy vitality and longevity. Watch for heat-related issues.",
+    family: "Jupiter in the family house ensures a peaceful and harmonious domestic life.",
+    work: "A strong 10th house indicates leadership roles in corporate or government sectors.",
+    finance: "Prosperity is indicated through intelligence. Avoid impulsive luxury spending.",
+    business: "Entrepreneurial success is predicted in tech, food, or communication industries.",
+    wife: "A supportive and graceful partner is indicated. Fortune improves after marriage.",
+    future: "A bright future awaits with significant social recognition after mid-life.",
+    credit: "Be cautious with debt. Avoid becoming a guarantor for others' loans."
+  }
+};
+
+const SectionHeader = ({ icon: Icon, title, pageNumber }) => (
+  <div className="flex items-center justify-between border-b-2 border-indigo-600 pb-2 mb-6">
+    <div className="flex items-center gap-3">
+      <div className="p-2 bg-indigo-600 text-white rounded-lg">
+        <Icon size={20} />
+      </div>
+      <h3 className="text-xl font-bold text-slate-900">{title}</h3>
+    </div>
+    <span className="text-sm font-bold text-slate-400 uppercase tracking-widest">Page {pageNumber}</span>
+  </div>
+);
+
+const Chart = ({ title, planets = {} }) => (
+  <div className="space-y-3">
+    <p className="text-center font-bold text-slate-700 uppercase text-[10px] tracking-tighter">{title}</p>
+    <div className="aspect-square bg-white border-2 border-slate-900 relative">
+      <div className="absolute inset-0 grid grid-cols-3 grid-rows-3">
+        {[...Array(9)].map((_, i) => (
+          <div key={i} className="border border-slate-200 flex flex-col items-center justify-center p-1 overflow-hidden">
+             {planets[i] && planets[i].map(p => (
+               <span key={p} className="text-[9px] font-bold leading-tight">{p}</span>
+             ))}
+          </div>
+        ))}
+      </div>
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="w-full h-full border-2 border-slate-900"></div>
+        <div className="absolute top-1/3 w-full h-[1px] bg-slate-900"></div>
+        <div className="absolute top-2/3 w-full h-[1px] bg-slate-900"></div>
+        <div className="absolute left-1/3 h-full w-[1px] bg-slate-900"></div>
+        <div className="absolute left-2/3 h-full w-[1px] bg-slate-900"></div>
+        <div className="absolute top-1/3 left-1/3 w-1/3 h-1/3 bg-slate-50 flex items-center justify-center text-slate-200">ॐ</div>
+      </div>
+    </div>
+  </div>
+);
+
+export default function App() {
+  const [lang, setLang] = useState('ta'); 
+  const [step, setStep] = useState('form'); 
+  const [paymentVerified, setPaymentVerified] = useState(false); 
+  const [formData, setFormData] = useState({
+    name: '',
+    dob: '',
+    tob: '',
+    pob: '',
+    reportLang: 'ta'
+  });
+
+  useEffect(() => {
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('status') === 'success') {
+      const savedName = localStorage.getItem('astro_name');
+      if (savedName) setFormData(prev => ({...prev, name: savedName}));
+      setPaymentVerified(true);
+      setStep('generating');
+      setTimeout(() => setStep('result'), 3000);
+      window.history.replaceState({}, document.title, window.location.pathname);
+    }
+  }, []);
+
+  const t = translations[lang] || translations['en'];
+  const astroData = multiLangAstroContent[formData.reportLang] || multiLangAstroContent['en'];
+
+  const handleInputChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const resetFlow = () => {
+    setFormData({ name: '', dob: '', tob: '', pob: '', reportLang: lang });
+    setPaymentVerified(false); 
+    setStep('form');
+  };
+
+  const handlePaymentRedirect = (e) => {
+    e.preventDefault();
+    localStorage.setItem('astro_name', formData.name);
+    setStep('processing');
+    window.location.href = PAYMENT_LINK;
+  };
+
+  return (
+    <div className="min-h-screen bg-slate-100 font-sans text-slate-900">
+      <header className="bg-white border-b sticky top-0 z-30 print:hidden shadow-sm">
+        <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <div className="w-10 h-10 bg-indigo-600 rounded-xl flex items-center justify-center text-white">
+              <Sparkles size={24} />
+            </div>
+            <span className="font-bold text-xl tracking-tight">AstroAI Premium</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Languages size={18} className="text-slate-400" />
+            <select 
+              value={lang} 
+              onChange={(e) => {
+                setLang(e.target.value);
+                setFormData(prev => ({...prev, reportLang: e.target.value}));
+              }}
+              className="bg-transparent text-sm font-medium focus:outline-none cursor-pointer"
+            >
+              <option value="ta">தமிழ்</option>
+              <option value="te">తెలుగు</option>
+              <option value="kn">ಕನ್ನಡ</option>
+              <option value="hi">हिन्दी</option>
+              <option value="en">English</option>
+            </select>
+          </div>
+        </div>
+      </header>
+
+      <main className="max-w-5xl mx-auto p-4 py-8">
+        {step === 'form' && (
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-10">
+              <h1 className="text-3xl md:text-5xl font-extrabold mb-4">{t.title}</h1>
+              <p className="text-xl text-slate-600">{t.subtitle}</p>
+            </div>
+            <div className="bg-white rounded-[2.5rem] shadow-2xl border border-slate-100 overflow-hidden md:flex">
+                <div className="md:w-2/5 bg-indigo-600 p-10 text-white relative">
+                    <h3 className="text-2xl font-bold mb-6">Lifetime Report</h3>
+                    <ul className="space-y-4 text-sm">
+                      <li className="flex items-center gap-3"><CheckCircle size={18} /> {t.catHealth} Analysis</li>
+                      <li className="flex items-center gap-3"><CheckCircle size={18} /> {t.catWork} Success</li>
+                      <li className="flex items-center gap-3"><CheckCircle size={18} /> {t.catWife} Insights</li>
+                      <li className="flex items-center gap-3"><CheckCircle size={18} /> {t.catFinance} Growth</li>
+                    </ul>
+                    <div className="mt-12 bg-white/10 p-4 rounded-2xl">
+                      <p className="text-2xl font-black">₹{PACKAGE_PRICE}</p>
+                      <p className="text-xs uppercase font-bold">One-Time Access</p>
+                    </div>
+                </div>
+                <div className="md:w-3/5 p-10">
+                  <form onSubmit={handlePaymentRedirect} className="space-y-6">
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold text-slate-700 flex items-center gap-2"><User size={16} /> {t.name}</label>
+                      <input required type="text" name="name" value={formData.name} onChange={handleInputChange} className="w-full px-5 py-4 rounded-2xl border border-slate-200 focus:ring-4 focus:ring-indigo-50 outline-none" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-6">
+                      <div className="space-y-2">
+                        <label className="text-sm font-bold text-slate-700 flex items-center gap-2"><Calendar size={16} /> {t.dob}</label>
+                        <input required type="date" name="dob" value={formData.dob} onChange={handleInputChange} className="w-full px-5 py-4 rounded-2xl border border-slate-200" />
+                      </div>
+                      <div className="space-y-2">
+                        <label className="text-sm font-bold text-slate-700 flex items-center gap-2"><Clock size={16} /> {t.tob}</label>
+                        <input required type="time" name="tob" value={formData.tob} onChange={handleInputChange} className="w-full px-5 py-4 rounded-2xl border border-slate-200" />
+                      </div>
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-sm font-bold text-slate-700 flex items-center gap-2"><MapPin size={16} /> {t.pob}</label>
+                      <input required type="text" name="pob" value={formData.pob} onChange={handleInputChange} className="w-full px-5 py-4 rounded-2xl border border-slate-200" placeholder="City, State" />
+                    </div>
+                    <button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-black text-lg py-5 px-8 rounded-2xl shadow-xl flex items-center justify-center gap-3">
+                      <CreditCard size={20} /> {t.btnPay} <ChevronRight />
+                    </button>
+                  </form>
+                </div>
+            </div>
+          </div>
+        )}
+
+        {step === 'processing' && (
+          <div className="text-center py-20">
+            <div className="w-16 h-16 border-4 border-t-indigo-600 rounded-full animate-spin mx-auto mb-6"></div>
+            <h2 className="text-2xl font-bold">{t.processing}</h2>
+          </div>
+        )}
+
+        {paymentVerified && step === 'result' && (
+          <div className="max-w-4xl mx-auto space-y-8">
+            <div className="bg-white p-6 rounded-3xl shadow-sm flex justify-between items-center print:hidden">
+              <h2 className="text-2xl font-bold text-emerald-600">Verification Success!</h2>
+              <div className="flex gap-4">
+                <button onClick={resetFlow} className="px-6 py-3 border rounded-xl font-bold flex items-center gap-2">
+                  <RefreshCw size={18} /> {t.newReport}
+                </button>
+                <button onClick={() => window.print()} className="px-6 py-3 bg-indigo-600 text-white rounded-xl font-bold flex items-center gap-2">
+                  <Printer size={18} /> {t.print}
+                </button>
+              </div>
+            </div>
+            {/* 6-PAGE REPORT RENDERED HERE */}
+            <div className="space-y-8 print:space-y-0">
+               <div className="report-page bg-white p-12 min-h-[1050px] shadow-xl rounded-3xl">
+                  <SectionHeader icon={Sun} title="Personal Profile" pageNumber="1" />
+                  <div className="text-center py-20">
+                    <h1 className="text-5xl font-black mb-4">{formData.name}</h1>
+                    <p className="text-xl text-slate-500 font-mono">{formData.dob} @ {formData.tob}</p>
+                    <p className="text-slate-400 mt-2">{formData.pob}</p>
+                  </div>
+               </div>
+               <div className="report-page bg-white p-12 min-h-[1050px] shadow-xl rounded-3xl">
+                  <SectionHeader icon={Compass} title="Birth Charts" pageNumber="2" />
+                  <div className="grid grid-cols-2 gap-10">
+                    <Chart title="Rasi Chart" planets={{ 0: ['ME', 'VE'], 2: ['SU'], 4: ['MA'], 6: ['JU'], 8: ['AS'] }} />
+                    <Chart title="Navamsa" planets={{ 1: ['MO'], 3: ['SA'], 5: ['RA'], 7: ['KE'], 0: ['JU'] }} />
+                  </div>
+               </div>
+               <div className="report-page bg-white p-12 min-h-[1050px] shadow-xl rounded-3xl">
+                  <SectionHeader icon={BookOpen} title="Life Predictions" pageNumber="3" />
+                  <div className="space-y-8">
+                    <div><h4 className="font-bold text-indigo-600 uppercase mb-2">{t.catHealth}</h4><p className="text-lg leading-relaxed">{astroData.health}</p></div>
+                    <div><h4 className="font-bold text-indigo-600 uppercase mb-2">{t.catWork}</h4><p className="text-lg leading-relaxed">{astroData.work}</p></div>
+                  </div>
+               </div>
+               <div className="report-page bg-white p-12 min-h-[1050px] shadow-xl rounded-3xl">
+                  <SectionHeader icon={TrendingUp} title="Finance & Business" pageNumber="4" />
+                  <div className="space-y-8">
+                    <div><h4 className="font-bold text-indigo-600 uppercase mb-2">{t.catFinance}</h4><p className="text-lg leading-relaxed">{astroData.finance}</p></div>
+                    <div><h4 className="font-bold text-indigo-600 uppercase mb-2">{t.catBusiness}</h4><p className="text-lg leading-relaxed">{astroData.business}</p></div>
+                  </div>
+               </div>
+               <div className="report-page bg-white p-12 min-h-[1050px] shadow-xl rounded-3xl">
+                  <SectionHeader icon={Heart} title="Family & Partner" pageNumber="5" />
+                  <div className="space-y-8">
+                    <div><h4 className="font-bold text-rose-600 uppercase mb-2">{t.catWife}</h4><p className="text-lg leading-relaxed">{astroData.wife}</p></div>
+                    <div><h4 className="font-bold text-indigo-600 uppercase mb-2">{t.catFamily}</h4><p className="text-lg leading-relaxed">{astroData.family}</p></div>
+                  </div>
+               </div>
+               <div className="report-page bg-white p-12 min-h-[1050px] shadow-xl rounded-3xl">
+                  <SectionHeader icon={ShieldAlert} title="Credit & Future" pageNumber="6" />
+                  <div className="space-y-8">
+                    <div><h4 className="font-bold text-red-600 uppercase mb-2">{t.catCredit}</h4><p className="text-lg leading-relaxed">{astroData.credit}</p></div>
+                    <div><h4 className="font-bold text-indigo-600 uppercase mb-2">{t.catFuture}</h4><p className="text-lg leading-relaxed">{astroData.future}</p></div>
+                  </div>
+                  <div className="mt-auto pt-10 border-t text-center text-slate-400">© 2024 AstroAI Global</div>
+               </div>
+            </div>
+          </div>
+        )}
+
+        {(step === 'result' || step === 'generating') && !paymentVerified && (
+            <div className="max-w-md mx-auto text-center p-12 bg-white rounded-3xl shadow-xl border border-red-50">
+              <Lock size={48} className="mx-auto text-red-600 mb-6" />
+              <h2 className="text-2xl font-bold mb-2">Access Locked</h2>
+              <p className="text-slate-500 mb-8">Payment of ₹{PACKAGE_PRICE} is required to view this report.</p>
+              <button onClick={() => setStep('form')} className="px-8 py-3 bg-indigo-600 text-white rounded-xl font-bold">Try Payment Again</button>
+            </div>
+        )}
+      </main>
+
+      <style>{`
+        @media print {
+          @page { size: A4; margin: 0; }
+          body { background: white !important; }
+          .print\\:hidden { display: none !important; }
+          .report-page { height: 100vh !important; page-break-after: always !important; box-shadow: none !important; border: none !important; border-radius: 0 !important; }
+        }
+      `}</style>
+    </div>
+  );
+}
